@@ -1,0 +1,110 @@
+@page "/excel-summary"
+@using System
+@using System.IO
+@using Microsoft.AspNetCore.Hosting
+@using MorgenAttendanceSummaryCreator.Helper
+@using global::MorgenAttendanceSummaryCreator.Models
+@inject IJSRuntime JS
+@inject ILogger<ExcelSummary> Logger
+@inject IWebHostEnvironment Environment
+@rendermode InteractiveServer
+
+
+<PageTitle>Create Xls Summmary</PageTitle>
+
+<script>
+  window.downloadFileFromStream = async (fileName, contentStreamReference) => {
+    const arrayBuffer = await contentStreamReference.arrayBuffer();
+    const blob = new Blob([arrayBuffer]);
+    const url = URL.createObjectURL(blob);
+    const anchorElement = document.createElement('a');
+    anchorElement.href = url;
+    anchorElement.download = fileName ?? '';
+    anchorElement.click();
+    anchorElement.remove();
+    URL.revokeObjectURL(url);
+  }
+</script>
+
+<h1>Xls Summmary Creator</h1>
+
+@switch (processingStatus)
+{
+  case ProcessingStatus.None:
+  case ProcessingStatus.CreateSummaryEnd:
+    <p><label>Upload xls file up to @maxFileSize bytes:
+    <InputFile OnChange="LoadFiles" />
+  </label></p>
+    break;
+  case ProcessingStatus.UploadEnd:
+    <button class="btn btn-primary" @onclick="CreateXlsSummary">Create Morgen Attendance Summary</button>
+    break;
+}
+
+<div class="progress-msg">
+  @switch (processingStatus)
+  {
+    case ProcessingStatus.None:
+      <p></p>
+      break;
+    case ProcessingStatus.UploadStart:
+      <p>Uploading...</p>
+      break;
+    case ProcessingStatus.UploadEnd:
+      <p>Upload completed!!!</p>
+      break;
+    case ProcessingStatus.CreateSummaryStart:
+      <p>Creating Summary Xls...</p>
+      break;
+    case ProcessingStatus.CreateSummaryEnd:
+      <p>Create Summary Xls completed!!!</p>
+      break;
+  }
+
+</div>
+
+@code {
+  private long maxFileSize = 1024 * 1024 * 20;
+  private ProcessingStatus processingStatus = ProcessingStatus.None;
+
+  private async Task LoadFiles(InputFileChangeEventArgs e)
+  {
+    processingStatus = ProcessingStatus.UploadStart;
+
+    try
+    {
+      await using FileStream fs = new(Path.Combine(Environment.WebRootPath, "Input.xlsx"), FileMode.Create);
+      await e.File.OpenReadStream(maxFileSize).CopyToAsync(fs);
+      Logger.LogInformation("File upload completed");
+    }
+    catch (Exception ex)
+    {
+      Logger.LogError("Error uploading file", ex.Message);
+    }
+
+    processingStatus = ProcessingStatus.UploadEnd;
+  }
+
+  private async Task CreateXlsSummary()
+  {
+    processingStatus = ProcessingStatus.CreateSummaryStart;
+
+    try
+    {
+      ExcelSummaryCreator summaryCreator = new();
+      MemoryStream fileStream = summaryCreator.CreateSummary(Path.Combine(Environment.WebRootPath, "Input.xlsx"));
+      string fileName = "Output.xls";
+
+      using var streamRef = new DotNetStreamReference(stream: fileStream);
+
+      await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+
+    }
+    catch (Exception ex)
+    {
+      Logger.LogError("Error create summary xls", ex.Message);
+    }
+
+    processingStatus = ProcessingStatus.CreateSummaryEnd;
+  }
+}
