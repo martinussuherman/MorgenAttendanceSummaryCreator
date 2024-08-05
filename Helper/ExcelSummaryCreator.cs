@@ -42,6 +42,10 @@ public class ExcelSummaryCreator
     {
         outputWorksheet.UsedRange.AutofitColumns();
         outputWorksheet.UsedRange.AutofitRows();
+        outputWorksheet.Range[1, 1].CellStyle.Font.Size = 18;
+        outputWorksheet.Range[1, 1].CellStyle.Font.Bold = true;
+        outputWorksheet.Range[1, 1].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+        outputWorksheet.Range[1, 1].CellStyle.VerticalAlignment = ExcelVAlign.VAlignCenter;
         outputWorksheet.Range[1, 1].RowHeight = 28;
     }
 
@@ -49,11 +53,6 @@ public class ExcelSummaryCreator
     private void WriteSummaryHeader(IWorksheet outputWorksheet, StartAndEndDateInfo bounds)
     {
         outputWorksheet.Range[1, 1].Text = "SUMMARY ABSENSI";
-        outputWorksheet.Range[1, 1].CellStyle.Font.Size = 18;
-        outputWorksheet.Range[1, 1].CellStyle.Font.Bold = true;
-        outputWorksheet.Range[1, 1].RowHeight = 22;
-        outputWorksheet.Range[1, 1].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
-        outputWorksheet.Range[1, 1].CellStyle.VerticalAlignment = ExcelVAlign.VAlignCenter;
         outputWorksheet.Range[1, 1, 1, 5].Merge();
         outputWorksheet.Range[2, 1].Text = "PERIODE: ";
         outputWorksheet.Range[2, 2].DateTime = bounds.StartDate;
@@ -147,11 +146,6 @@ public class ExcelSummaryCreator
     private void WriteEmployeeTimeInAndOutHeader(IWorksheet inputWorksheet, IWorksheet outputWorksheet, StartAndEndDateInfo bounds)
     {
         outputWorksheet.Range[1, 1].Text = "DATA WAKTU MASUK/KELUAR KARYAWAN";
-        outputWorksheet.Range[1, 1].CellStyle.Font.Size = 18;
-        outputWorksheet.Range[1, 1].CellStyle.Font.Bold = true;
-        outputWorksheet.Range[1, 1].RowHeight = 22;
-        outputWorksheet.Range[1, 1].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
-        outputWorksheet.Range[1, 1].CellStyle.VerticalAlignment = ExcelVAlign.VAlignCenter;
         outputWorksheet.Range[1, 1, 1, 2 * inputWorksheet.Columns.Length + 4].Merge();
         outputWorksheet.Range[2, 1].Text = "PERIODE: ";
         outputWorksheet.Range[2, 2].DateTime = bounds.StartDate;
