@@ -135,4 +135,27 @@ public class ExcelSummaryCreator
 
         return attendanceCount;
     }
+
+    private TimeInAndOutData ParseTimeInAndOut(IRange range)
+    {
+        if (range.IsBlank || string.IsNullOrWhiteSpace(range.Text))
+        {
+            return new TimeInAndOutData();
+        }
+
+        string[] clockParts = range.Text.Split([' '], StringSplitOptions.TrimEntries);
+        TimeInAndOutData result = new();
+
+        if (!string.IsNullOrWhiteSpace(clockParts[0]))
+        {
+            result.TimeIn = TimeOnly.Parse(clockParts[0]);
+        }
+
+        if (!string.IsNullOrWhiteSpace(clockParts[1]))
+        {
+            result.TimeOut = TimeOnly.Parse(clockParts[1]);
+        }
+
+        return result;
+    }
 }
