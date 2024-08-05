@@ -38,6 +38,14 @@ public class ExcelSummaryCreator
         return outputStream;
     }
 
+    private void AdjustOutputWorksheetRowAndColumn(IWorksheet outputWorksheet)
+    {
+        outputWorksheet.UsedRange.AutofitColumns();
+        outputWorksheet.UsedRange.AutofitRows();
+        outputWorksheet.Range[1, 1].RowHeight = 28;
+    }
+
+
     private void WriteSummaryHeader(IWorksheet outputWorksheet, StartAndEndDateInfo bounds)
     {
         outputWorksheet.Range[1, 1].Text = "SUMMARY ABSENSI";
