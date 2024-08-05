@@ -136,6 +136,37 @@ public class ExcelSummaryCreator
         return attendanceCount;
     }
 
+    private void WriteEmployeeTimeInAndOutHeader(IWorksheet inputWorksheet, IWorksheet outputWorksheet, StartAndEndDateInfo bounds)
+    {
+        outputWorksheet.Range[1, 1].Text = "DATA WAKTU MASUK/KELUAR KARYAWAN";
+        outputWorksheet.Range[1, 1].CellStyle.Font.Size = 18;
+        outputWorksheet.Range[1, 1].CellStyle.Font.Bold = true;
+        outputWorksheet.Range[1, 1].RowHeight = 22;
+        outputWorksheet.Range[1, 1].CellStyle.HorizontalAlignment = ExcelHAlign.HAlignCenter;
+        outputWorksheet.Range[1, 1].CellStyle.VerticalAlignment = ExcelVAlign.VAlignCenter;
+        outputWorksheet.Range[1, 1, 1, 2 * inputWorksheet.Columns.Length + 4].Merge();
+        outputWorksheet.Range[2, 1].Text = "PERIODE: ";
+        outputWorksheet.Range[2, 2].DateTime = bounds.StartDate;
+        outputWorksheet.Range[2, 3].Text = " S/D ";
+        outputWorksheet.Range[2, 4].DateTime = bounds.EndDate;
+        outputWorksheet.Range[3, 1].Text = "Nomor";
+        outputWorksheet.Range[3, 2].Text = "ID";
+        outputWorksheet.Range[3, 3].Text = "Nama";
+        outputWorksheet.Range[3, 4].Text = "Departemen";
+
+        outputWorksheet.Range[3, 1, 4, 1].Merge();
+        outputWorksheet.Range[3, 2, 4, 2].Merge();
+        outputWorksheet.Range[3, 3, 4, 3].Merge();
+        outputWorksheet.Range[3, 4, 4, 4].Merge();
+
+        for (int column = 1; column <= inputWorksheet.Columns.Length; column++)
+        {
+            outputWorksheet.Range[3, 3 + column * 2].DateTime = bounds.StartDate.AddDays(column - 1);
+            outputWorksheet.Range[3, 3 + column * 2, 3, 4 + column * 2].Merge();
+            outputWorksheet.Range[4, 3 + column * 2].Text = "IN";
+            outputWorksheet.Range[4, 4 + column * 2].Text = "OUT";
+        }
+    }
     private void WriteEmployeeTimeInAndOutDetail(IWorksheet outputWorksheet, EmployeeTimeInAndOutData item, int index)
     {
         outputWorksheet.Range[index + 5, 1].Number = index + 1;
