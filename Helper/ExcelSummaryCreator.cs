@@ -136,6 +136,25 @@ public class ExcelSummaryCreator
         return attendanceCount;
     }
 
+    private List<EmployeeTimeInAndOutData> ParseEmployeeTimeInAndOutDataFromXls(IWorksheet inputWorksheet)
+    {
+        int rowCount = inputWorksheet.Rows.Length;
+        int columnCount = inputWorksheet.Columns.Length;
+        List<EmployeeTimeInAndOutData> list = [];
+
+        for (int row = 2; row <= rowCount; row += 4)
+        {
+            list.Add(
+                new EmployeeTimeInAndOutData
+                {
+                    EmployeeInfo = ParseEmployeeInfo(inputWorksheet, row),
+                    TimeInAndOutData = RetrieveTimeInAndOutList(inputWorksheet, row, columnCount)
+                }
+            );
+        }
+
+        return list;
+    }
     private List<TimeInAndOutData> RetrieveTimeInAndOutList(IWorksheet inputWorksheet, int row, int columnCount)
     {
         List<TimeInAndOutData> result = [];
