@@ -17,7 +17,7 @@ public class ExcelSummaryCreator
         IWorksheet inputWorksheet = inputWorkbook.Worksheets[0];
         List<AttendanceSummaryData> summaryData = ReadAttendanceXls(inputWorksheet);
         StartAndEndDateInfo bounds = ParseStartAndEndDateInfo(inputWorksheet);
-        IWorkbook outputWorkbook = application.Workbooks.Create(1);
+        IWorkbook outputWorkbook = application.Workbooks.Create(["Summary", "Time-Data"]);
         IWorksheet outputWorksheet = outputWorkbook.Worksheets[0];
 
         outputWorksheet.IsGridLinesVisible = false;
@@ -28,8 +28,20 @@ public class ExcelSummaryCreator
             WriteSummaryDetail(outputWorksheet, summaryData[index], index);
         }
 
-        outputWorksheet.UsedRange.AutofitColumns();
-        outputWorksheet.UsedRange.AutofitRows();
+        AdjustOutputWorksheetRowAndColumn(outputWorksheet);
+
+        List<EmployeeTimeInAndOutData> timeData = ParseEmployeeTimeInAndOutDataFromXls(inputWorksheet);
+        outputWorksheet = outputWorkbook.Worksheets[1];
+        outputWorksheet.IsGridLinesVisible = false;
+        WriteEmployeeTimeInAndOutHeader(inputWorksheet, outputWorksheet, bounds);
+
+        for (int index = 0; index < timeData.Count; index++)
+        {
+            WriteEmployeeTimeInAndOutDetail(outputWorksheet, timeData[index], index);
+        }
+
+        AdjustOutputWorksheetRowAndColumn(outputWorksheet);
+        outputWorksheet.Range[5, 5, 4 + timeData.Count, 4 + timeData[0].TimeInAndOutData.Count * 2].CellStyle.NumberFormat = "hh:MM";
 
         MemoryStream outputStream = new();
 
