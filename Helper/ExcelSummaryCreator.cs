@@ -248,4 +248,23 @@ public class ExcelSummaryCreator
 
         return result;
     }
+
+    private List<EmployeeTimeInAndOutData> FilterEmptyEmployeeTimeInAndOutData(
+        List<AttendanceSummaryData> summaryData,
+        List<EmployeeTimeInAndOutData> timeData)
+    {
+        List<EmployeeTimeInAndOutData> result = [];
+
+        for (int index = 0; index < summaryData.Count; index++)
+        {
+            if (summaryData[index].AttendanceCount == 0)
+            {
+                continue;
+            }
+
+            result.Add(timeData[index]);
+        }
+
+        return result;
+    }
 }
