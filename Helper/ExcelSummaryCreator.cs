@@ -136,6 +136,21 @@ public class ExcelSummaryCreator
         return attendanceCount;
     }
 
+    private void WriteEmployeeTimeInAndOutDetail(IWorksheet outputWorksheet, EmployeeTimeInAndOutData item, int index)
+    {
+        outputWorksheet.Range[index + 5, 1].Number = index + 1;
+        outputWorksheet.Range[index + 5, 2].Text = item.EmployeeInfo.Id;
+        outputWorksheet.Range[index + 5, 3].Text = item.EmployeeInfo.Name;
+        outputWorksheet.Range[index + 5, 4].Text = item.EmployeeInfo.Department;
+        DateOnly dummyDate = new DateOnly(2000, 1, 1);
+
+        for (int column = 0; column < item.TimeInAndOutData.Count; column++)
+        {
+            outputWorksheet.Range[index + 5, 5 + column * 2].DateTime = dummyDate.ToDateTime(item.TimeInAndOutData[column].TimeIn);
+            outputWorksheet.Range[index + 5, 6 + column * 2].DateTime = dummyDate.ToDateTime(item.TimeInAndOutData[column].TimeOut);
+        }
+    }
+
     private List<EmployeeTimeInAndOutData> ParseEmployeeTimeInAndOutDataFromXls(IWorksheet inputWorksheet)
     {
         int rowCount = inputWorksheet.Rows.Length;
