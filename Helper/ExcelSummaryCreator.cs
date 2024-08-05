@@ -136,6 +136,17 @@ public class ExcelSummaryCreator
         return attendanceCount;
     }
 
+    private List<TimeInAndOutData> RetrieveTimeInAndOutList(IWorksheet inputWorksheet, int row, int columnCount)
+    {
+        List<TimeInAndOutData> result = [];
+
+        for (int column = 1; column <= columnCount; column++)
+        {
+            result.Add(ParseTimeInAndOut(inputWorksheet.Range[row + 2, column]));
+        }
+
+        return result;
+    }
     private TimeInAndOutData ParseTimeInAndOut(IRange range)
     {
         if (range.IsBlank || string.IsNullOrWhiteSpace(range.Text))
