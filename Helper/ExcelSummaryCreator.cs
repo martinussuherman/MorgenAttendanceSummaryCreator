@@ -31,17 +31,18 @@ public class ExcelSummaryCreator
         AdjustOutputWorksheetRowAndColumn(outputWorksheet);
 
         List<EmployeeTimeInAndOutData> timeData = ParseEmployeeTimeInAndOutDataFromXls(inputWorksheet);
+        List<EmployeeTimeInAndOutData> filteredTimeData = FilterEmptyEmployeeTimeInAndOutData(summaryData, timeData);
         outputWorksheet = outputWorkbook.Worksheets[1];
         outputWorksheet.IsGridLinesVisible = false;
         WriteEmployeeTimeInAndOutHeader(inputWorksheet, outputWorksheet, bounds);
 
-        for (int index = 0; index < timeData.Count; index++)
+        for (int index = 0; index < filteredTimeData.Count; index++)
         {
-            WriteEmployeeTimeInAndOutDetail(outputWorksheet, timeData[index], index);
+            WriteEmployeeTimeInAndOutDetail(outputWorksheet, filteredTimeData[index], index);
         }
 
         AdjustOutputWorksheetRowAndColumn(outputWorksheet);
-        outputWorksheet.Range[5, 5, 4 + timeData.Count, 4 + timeData[0].TimeInAndOutData.Count * 2].CellStyle.NumberFormat = "hh:MM";
+        outputWorksheet.Range[5, 5, 4 + filteredTimeData.Count, 4 + filteredTimeData[0].TimeInAndOutData.Count * 2].CellStyle.NumberFormat = "hh:MM";
 
         MemoryStream outputStream = new();
 
