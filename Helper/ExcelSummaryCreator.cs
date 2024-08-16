@@ -155,6 +155,22 @@ public class ExcelSummaryCreator
 
         return attendanceCount;
     }
+    private List<AttendanceSummaryData> FilterZeroCountSummaryData(List<AttendanceSummaryData> summaryData)
+    {
+        List<AttendanceSummaryData> result = [];
+
+        for (int index = 0; index < summaryData.Count; index++)
+        {
+            if (summaryData[index].AttendanceCount == 0)
+            {
+                continue;
+            }
+
+            result.Add(summaryData[index]);
+        }
+
+        return result;
+    }
 
     private void WriteEmployeeTimeInAndOutHeader(IWorksheet inputWorksheet, IWorksheet outputWorksheet, StartAndEndDateInfo bounds)
     {
