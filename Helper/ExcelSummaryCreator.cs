@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Options;
+using MorgenAttendanceSummaryCreator.Misc;
 using MorgenAttendanceSummaryCreator.Models;
 using Syncfusion.XlsIO;
 
@@ -5,6 +7,11 @@ namespace MorgenAttendanceSummaryCreator.Helper;
 
 public class ExcelSummaryCreator
 {
+    public ExcelSummaryCreator(IOptions<DefaultTimeOptions> defaultTimeOptions)
+    {
+        _defaultTimeOptions = defaultTimeOptions;
+    }
+
     public MemoryStream CreateSummary(string inputFileName)
     {
         using ExcelEngine excelEngine = new();
@@ -285,4 +292,6 @@ public class ExcelSummaryCreator
 
         return result;
     }
+
+    private readonly IOptions<DefaultTimeOptions> _defaultTimeOptions;
 }
