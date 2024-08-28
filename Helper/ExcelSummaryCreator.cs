@@ -16,6 +16,7 @@ public class ExcelSummaryCreator
         IWorkbook inputWorkbook = application.Workbooks.Open(inputStream);
         IWorksheet inputWorksheet = inputWorkbook.Worksheets[0];
         List<AttendanceSummaryData> summaryData = ReadAttendanceXls(inputWorksheet);
+        List<AttendanceSummaryData> filteredSummaryData = FilterZeroCountSummaryData(summaryData);
         StartAndEndDateInfo bounds = ParseStartAndEndDateInfo(inputWorksheet);
         IWorkbook outputWorkbook = application.Workbooks.Create(["Summary", "Time-Data"]);
         IWorksheet outputWorksheet = outputWorkbook.Worksheets[0];
@@ -23,9 +24,9 @@ public class ExcelSummaryCreator
         outputWorksheet.IsGridLinesVisible = false;
         WriteSummaryHeader(outputWorksheet, bounds);
 
-        for (int index = 0; index < summaryData.Count; index++)
+        for (int index = 0; index < filteredSummaryData.Count; index++)
         {
-            WriteSummaryDetail(outputWorksheet, summaryData[index], index);
+            WriteSummaryDetail(outputWorksheet, filteredSummaryData[index], index);
         }
 
         AdjustOutputWorksheetRowAndColumn(outputWorksheet);
