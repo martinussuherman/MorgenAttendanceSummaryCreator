@@ -2,11 +2,14 @@
 @using System
 @using System.IO
 @using Microsoft.AspNetCore.Hosting
+@using Microsoft.Extensions.Options
 @using MorgenAttendanceSummaryCreator.Helper
+@using MorgenAttendanceSummaryCreator.Misc
 @using global::MorgenAttendanceSummaryCreator.Models
 @inject IJSRuntime JS
 @inject ILogger<ExcelSummary> Logger
 @inject IWebHostEnvironment Environment
+@inject IOptions<DefaultTimeOptions> DefaultTimeOptions
 @rendermode InteractiveServer
 
 
@@ -91,7 +94,7 @@
 
     try
     {
-      ExcelSummaryCreator summaryCreator = new();
+      ExcelSummaryCreator summaryCreator = new(DefaultTimeOptions);
       MemoryStream fileStream = summaryCreator.CreateSummary(Path.Combine(Environment.WebRootPath, "Input.xlsx"));
       string fileName = "Output.xls";
 
