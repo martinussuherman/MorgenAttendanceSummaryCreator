@@ -1,10 +1,13 @@
 using MorgenAttendanceSummaryCreator.Components;
+using MorgenAttendanceSummaryCreator.Misc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.Configure<DefaultTimeOptions>(
+    builder.Configuration.GetSection(DefaultTimeOptions.OptionsName));
 
 var app = builder.Build();
 
