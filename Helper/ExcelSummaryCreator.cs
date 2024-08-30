@@ -293,5 +293,74 @@ public class ExcelSummaryCreator
         return result;
     }
 
+    private List<EmployeeWorkingHoursData> CalculateEmployeeWorkingHoursData(List<EmployeeTimeInAndOutData> source)
+    {
+        List<EmployeeWorkingHoursData> list = [];
+
+        foreach (EmployeeTimeInAndOutData employeeTimeData in source)
+        {
+            EmployeeWorkingHoursData employeeWorkingHoursData = new EmployeeWorkingHoursData
+            {
+                EmployeeInfo = employeeTimeData.EmployeeInfo
+            };
+
+            List<WorkingHoursData> resultWorkingHoursData = [];
+
+            foreach (TimeInAndOutData timeData in employeeTimeData.TimeInAndOutData)
+            {
+                resultWorkingHoursData.Add(new WorkingHoursData
+                {
+                    WorkingHours = CalculateWorkingHours(timeData),
+                    OvertimeHours = CalculateOvertimeHours(timeData),
+                    LateInMinutes = 0,
+                    EarlyOutMinutes = 0
+                });
+
+                if (timeData.TimeIn == TimeOnly.MinValue)
+                {
+                    employeeWorkingHoursData.NoTimeInCount++;
+                }
+
+                if (timeData.TimeOut == TimeOnly.MinValue)
+                {
+                    employeeWorkingHoursData.NoTimeOutCount++;
+                }
+            }
+
+            employeeWorkingHoursData.WorkingHoursData = resultWorkingHoursData;
+            list.Add(employeeWorkingHoursData);
+        }
+
+        return list;
+    }
+    private decimal CalculateWorkingHours(TimeInAndOutData data)
+    {
+        if (data.TimeIn == TimeOnly.MinValue && data.TimeOut == TimeOnly.MinValue)
+        {
+            return 0;
+        }
+
+        // TODO: How to deal with no time in data?
+        if (data.TimeIn == TimeOnly.MinValue)
+        {
+            return 1;
+        }
+
+        TimeOnly defaultOut = _defaultTimeOptions.Value.Out;
+
+        // TODO: How to deal with no time out data? Assume normal out
+        if (data.TimeOut == TimeOnly.MinValue)
+        {
+            return (decimal)(defaultOut - data.TimeIn).TotalHours;
+        }
+
+        return (decimal)(data.TimeOut - data.TimeIn).TotalHours;
+    }
+    private decimal CalculateOvertimeHours(TimeInAndOutData data)
+    {
+        return 0;
+    }
+
+
     private readonly IOptions<DefaultTimeOptions> _defaultTimeOptions;
 }
